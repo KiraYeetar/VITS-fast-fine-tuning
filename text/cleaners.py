@@ -38,8 +38,10 @@ def korean_cleaners(text):
 #     return text
 
 def chinese_cleaners(text):
+    text = number_to_chinese(text)
     from pypinyin import Style, pinyin
     text = text.replace("[ZH]", "")
+    # TONE3 - 声调风格3，即拼音声调在各个拼音之后，用数字 [1-4] 进行表示。如： 中国 -> zhong1 guo2
     phones = [phone[0] for phone in pinyin(text, style=Style.TONE3)]
     return ' '.join(phones)
 
@@ -47,8 +49,9 @@ def chinese_cleaners(text):
 def zh_ja_mixture_cleaners(text):
     text = re.sub(r'\[ZH\](.*?)\[ZH\]',
                   lambda x: chinese_to_romaji(x.group(1))+' ', text)
-    text = re.sub(r'\[JA\](.*?)\[JA\]', lambda x: japanese_to_romaji_with_accent(
-        x.group(1)).replace('ts', 'ʦ').replace('u', 'ɯ').replace('...', '…')+' ', text)
+    text = re.sub(r'\[JA\](.*?)\[JA\]',
+                  lambda x: japanese_to_romaji_with_accent(
+                      x.group(1)).replace('ts', 'ʦ').replace('u', 'ɯ').replace('...', '…')+' ', text)
     text = re.sub(r'\s+$', '', text)
     text = re.sub(r'([^\.,!\?\-…~])$', r'\1.', text)
     return text

@@ -11,7 +11,7 @@ import gradio as gr
 import librosa
 import webbrowser
 
-from text import text_to_sequence, _clean_text
+from text import text_to_sequence
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
 language_marks = {
     "Japanese": "",

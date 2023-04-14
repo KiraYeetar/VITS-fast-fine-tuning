@@ -22,3 +22,7 @@ opencc==1.1.1
 demucs
 openai-whisper
 gradio
+imageio==2.4.1
+youtube-dl
+moviepy
+whisper

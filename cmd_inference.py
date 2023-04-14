@@ -40,20 +40,19 @@ def get_text(text, hps, is_symbol):
     text_norm = LongTensor(text_norm)
     return text_norm
 
-
-
 if __name__ == "__main__":
     import argparse
-
     parser = argparse.ArgumentParser(description='vits inference')
-    #必须参数
+
+    # 必须参数
     parser.add_argument('-m', '--model_path', type=str, default="logs/44k/G_0.pth", help='模型路径')
     parser.add_argument('-c', '--config_path', type=str, default="configs/config.json", help='配置文件路径')
     parser.add_argument('-o', '--output_path', type=str, default="output/vits", help='输出文件路径')
     parser.add_argument('-l', '--language', type=str, default="日本語", help='输入的语言')
     parser.add_argument('-t', '--text', type=str, help='输入文本')
     parser.add_argument('-s', '--spk', type=str, help='合成目标说话人名称')
-    #可选参数
+
+    # 可选参数
     parser.add_argument('-on', '--output_name', type=str, default="output", help='输出文件的名称')
     parser.add_argument('-ns', '--noise_scale', type=float,default= .667,help='感情变化程度')
     parser.add_argument('-nsw', '--noise_scale_w', type=float,default=0.6, help='音素发音长度')
@@ -86,7 +85,6 @@ if __name__ == "__main__":
     
     speaker_ids = hps.speakers
 
-
     if language is not None:
         text = language_marks[language] + text + language_marks[language]
         speaker_id = speaker_ids[spk]
@@ -99,8 +97,4 @@ if __name__ == "__main__":
                                 length_scale=1.0 / length)[0][0, 0].data.cpu().float().numpy()
         del stn_tst, x_tst, x_tst_lengths, sid
 
-        wavf.write(str(output_dir)+"/"+output_name+".wav",hps.data.sampling_rate,audio)
-    
-
-    
-    
+        wavf.write(str(output_dir)+"/"+output_name+".wav", hps.data.sampling_rate,audio)

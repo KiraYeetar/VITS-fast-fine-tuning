@@ -1,6 +1,7 @@
 import os
 import argparse
 import json
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--add_auxiliary_data", type=bool, help="Whether to add extra data as fine-tuning helper")
@@ -52,8 +53,6 @@ if __name__ == "__main__":
         cc_duplicate = num_old_voices // num_new_voices
         if cc_duplicate == 0:
             cc_duplicate = 1
-
-
         # STEP 2: modify config file
         with open("./configs/finetune_speaker.json", 'r', encoding='utf-8') as f:
             hps = json.load(f)
@@ -68,7 +67,7 @@ if __name__ == "__main__":
         hps['speakers'] = speaker2id
         hps['train']['log_interval'] = 100
         hps['train']['eval_interval'] = 1000
-        hps['train']['batch_size'] = 16
+        hps['train']['batch_size'] = 32
         hps['data']['training_files'] = "final_annotation_train.txt"
         hps['data']['validation_files'] = "final_annotation_val.txt"
         # save modified config
@@ -93,6 +92,8 @@ if __name__ == "__main__":
             cleaned_text = text._clean_text(txt, hps['data']['text_cleaners'])
             cleaned_text += "\n" if not cleaned_text.endswith("\n") else ""
             cleaned_old_annos.append(path + "|" + str(speaker2id[speaker]) + "|" + cleaned_text)
+
+        # TODO 平衡数据集的人物数量, 是为了更好的学到新的人物？？
         # merge with old annotation
         final_annos = cleaned_old_annos + cc_duplicate * cleaned_new_annos
         # save annotation file
