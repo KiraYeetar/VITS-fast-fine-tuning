@@ -15,46 +15,46 @@ MATPLOTLIB_FLAG = False
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 logger = logging
 
-
-
 zh_pattern = re.compile(r'[\u4e00-\u9fa5]')
 en_pattern = re.compile(r'[a-zA-Z]')
 jp_pattern = re.compile(r'[\u3040-\u30ff\u31f0-\u31ff]')
 kr_pattern = re.compile(r'[\uac00-\ud7af\u1100-\u11ff\u3130-\u318f\ua960-\ua97f]')
-num_pattern=re.compile(r'[0-9]')
-comma=r"(?<=[.。!！?？；;，,、:：'\"‘“”’()（）《》「」~——])"    #向前匹配但固定长度
-tags={'ZH':'[ZH]','EN':'[EN]','JP':'[JA]','KR':'[KR]'}
+num_pattern = re.compile(r'[0-9]')
+comma = r"(?<=[.。!！?？；;，,、:：'\"‘“”’()（）《》「」~——])"  # 向前匹配但固定长度
+tags = {'ZH': '[ZH]', 'EN': '[EN]', 'JP': '[JA]', 'KR': '[KR]'}
+
 
 def tag_cjke(text):
-    '''为中英日韩加tag,中日正则分不开，故先分句分离中日再识别，以应对大部分情况'''
-    sentences = re.split(r"([.。!！?？；;，,、:：'\"‘“”’()（）【】《》「」~——]+ *(?![0-9]))", text) #分句，排除小数点
+    """为中英日韩加tag,中日正则分不开，故先分句分离中日再识别，以应对大部分情况"""
+    sentences = re.split(r"([.。!！?？；;，,、:：'\"‘“”’()（）【】《》「」~——]+ *(?![0-9]))", text)  # 分句，排除小数点
     sentences.append("")
-    sentences = ["".join(i) for i in zip(sentences[0::2],sentences[1::2])]
+    sentences = ["".join(i) for i in zip(sentences[0::2], sentences[1::2])]
     # print(sentences)
-    prev_lang=None
+    prev_lang = None
     tagged_text = ""
     for s in sentences:
-        #全为符号跳过
-        nu = re.sub(r'[\s\p{P}]+', '', s, flags=re.U).strip()   
-        if len(nu)==0:
+        # 全为符号跳过
+        nu = re.sub(r'[\s\p{P}]+', '', s, flags=re.U).strip()
+        if len(nu) == 0:
             continue
         s = re.sub(r'[()（）《》「」【】‘“”’]+', '', s)
-        jp=re.findall(jp_pattern, s)
-        #本句含日语字符判断为日语
-        if len(jp)>0:  
-            prev_lang,tagged_jke=tag_jke(s,prev_lang)
-            tagged_text +=tagged_jke
+        jp = re.findall(jp_pattern, s)
+        # 本句含日语字符判断为日语
+        if len(jp) > 0:
+            prev_lang, tagged_jke = tag_jke(s, prev_lang)
+            tagged_text += tagged_jke
         else:
-            prev_lang,tagged_cke=tag_cke(s,prev_lang)
-            tagged_text +=tagged_cke
+            prev_lang, tagged_cke = tag_cke(s, prev_lang)
+            tagged_text += tagged_cke
     return tagged_text
 
-def tag_jke(text,prev_sentence=None):
-    '''为英日韩加tag'''
+
+def tag_jke(text, prev_sentence=None):
+    """为英日韩加tag"""
     # 初始化标记变量
     tagged_text = ""
     prev_lang = None
-    tagged=0
+    tagged = 0
     # 遍历文本
     for char in text:
         # 判断当前字符属于哪种语言
@@ -74,35 +74,36 @@ def tag_jke(text,prev_sentence=None):
             continue
         # 如果当前语言与上一个语言不同，就添加标记
         if lang != prev_lang:
-            tagged=1
-            if prev_lang==None: # 开头
-                tagged_text =tags[lang]+tagged_text
+            tagged = 1
+            if not prev_lang:  # 开头
+                tagged_text = tags[lang] + tagged_text
             else:
-                tagged_text =tagged_text+tags[prev_lang]+tags[lang]
+                tagged_text = tagged_text + tags[prev_lang] + tags[lang]
 
             # 重置标记变量
             prev_lang = lang
 
         # 添加当前字符到标记文本中
         tagged_text += char
-    
+
     # 在最后一个语言的结尾添加对应的标记
     if prev_lang:
-            tagged_text += tags[prev_lang]
+        tagged_text += tags[prev_lang]
     if not tagged:
-        prev_lang=prev_sentence
-        tagged_text =tags[prev_lang]+tagged_text+tags[prev_lang]
+        prev_lang = prev_sentence
+        tagged_text = tags[prev_lang] + tagged_text + tags[prev_lang]
 
-    return prev_lang,tagged_text
+    return prev_lang, tagged_text
 
-def tag_cke(text,prev_sentence=None):
-    '''为中英韩加tag'''
+
+def tag_cke(text, prev_sentence=None):
+    """为中英韩加tag"""
     # 初始化标记变量
     tagged_text = ""
     prev_lang = None
     # 是否全略过未标签
-    tagged=0
-    
+    tagged = 0
+
     # 遍历文本
     for char in text:
         # 判断当前字符属于哪种语言
@@ -122,26 +123,26 @@ def tag_cke(text,prev_sentence=None):
 
         # 如果当前语言与上一个语言不同，添加标记
         if lang != prev_lang:
-            tagged=1
-            if prev_lang==None: # 开头
-                tagged_text =tags[lang]+tagged_text
+            tagged = 1
+            if not prev_lang:  # 开头
+                tagged_text = tags[lang] + tagged_text
             else:
-                tagged_text =tagged_text+tags[prev_lang]+tags[lang]
+                tagged_text = tagged_text + tags[prev_lang] + tags[lang]
 
             # 重置标记变量
             prev_lang = lang
 
         # 添加当前字符到标记文本中
         tagged_text += char
-    
+
     # 在最后一个语言的结尾添加对应的标记
     if prev_lang:
-            tagged_text += tags[prev_lang]
+        tagged_text += tags[prev_lang]
     # 未标签则继承上一句标签
-    if tagged==0:
-        prev_lang=prev_sentence
-        tagged_text =tags[prev_lang]+tagged_text+tags[prev_lang]
-    return prev_lang,tagged_text
+    if tagged == 0:
+        prev_lang = prev_sentence
+        tagged_text = tags[prev_lang] + tagged_text + tags[prev_lang]
+    return prev_lang, tagged_text
 
 
 def load_checkpoint(checkpoint_path, model, optimizer=None, drop_speaker_emb=False):
