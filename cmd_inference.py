@@ -40,8 +40,10 @@ def get_text(text, hps, is_symbol):
     text_norm = LongTensor(text_norm)
     return text_norm
 
+
 if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser(description='vits inference')
 
     # 必须参数
@@ -54,17 +56,17 @@ if __name__ == "__main__":
 
     # 可选参数
     parser.add_argument('-on', '--output_name', type=str, default="output", help='输出文件的名称')
-    parser.add_argument('-ns', '--noise_scale', type=float,default= .667,help='感情变化程度')
-    parser.add_argument('-nsw', '--noise_scale_w', type=float,default=0.6, help='音素发音长度')
-    parser.add_argument('-ls', '--length_scale', type=float,default=1, help='整体语速')
-    
+    parser.add_argument('-ns', '--noise_scale', type=float, default=.667, help='感情变化程度')
+    parser.add_argument('-nsw', '--noise_scale_w', type=float, default=0.6, help='音素发音长度')
+    parser.add_argument('-ls', '--length_scale', type=float, default=1, help='整体语速')
+
     args = parser.parse_args()
-    
+
     model_path = args.model_path
     config_path = args.config_path
     output_dir = Path(args.output_path)
     output_dir.mkdir(parents=True, exist_ok=True)
-    
+
     language = args.language
     text = args.text
     spk = args.spk
@@ -72,7 +74,7 @@ if __name__ == "__main__":
     noise_scale_w = args.noise_scale_w
     length = args.length_scale
     output_name = args.output_name
-    
+
     hps = utils.get_hparams_from_file(config_path)
     net_g = SynthesizerTrn(
         len(hps.symbols),
@@ -82,7 +84,7 @@ if __name__ == "__main__":
         **hps.model).to(device)
     _ = net_g.eval()
     _ = utils.load_checkpoint(model_path, net_g, None)
-    
+
     speaker_ids = hps.speakers
 
     if language is not None:
@@ -97,4 +99,4 @@ if __name__ == "__main__":
                                 length_scale=1.0 / length)[0][0, 0].data.cpu().float().numpy()
         del stn_tst, x_tst, x_tst_lengths, sid
 
-        wavf.write(str(output_dir)+"/"+output_name+".wav", hps.data.sampling_rate,audio)
+        wavf.write(str(output_dir) + "/" + output_name + ".wav", hps.data.sampling_rate, audio)

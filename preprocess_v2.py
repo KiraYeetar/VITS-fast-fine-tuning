@@ -67,7 +67,7 @@ if __name__ == "__main__":
         hps['speakers'] = speaker2id
         hps['train']['log_interval'] = 100
         hps['train']['eval_interval'] = 1000
-        hps['train']['batch_size'] = 8
+        hps['train']['batch_size'] = 16
         hps['data']['training_files'] = "final_annotation_train.txt"
         hps['data']['validation_files'] = "final_annotation_val.txt"
         # save modified config
