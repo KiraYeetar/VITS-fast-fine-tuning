@@ -85,7 +85,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     hps = utils.get_hparams_from_file(args.config_dir)
 
-
     net_g = SynthesizerTrn(
         len(hps.symbols),
         hps.data.filter_length // 2 + 1,

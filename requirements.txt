@@ -26,3 +26,4 @@ imageio==2.4.1
 youtube-dl
 moviepy
 whisper
+pypinyin_dict
