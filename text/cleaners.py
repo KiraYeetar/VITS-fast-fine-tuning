@@ -31,22 +31,14 @@ def korean_cleaners(text):
     text = re.sub(r'([\u3131-\u3163])$', r'\1.', text)
     return text
 
-
-# def chinese_cleaners(text):
-#     '''Pipeline for Chinese text'''
-#     text = number_to_chinese(text)
-#     text = chinese_to_bopomofo(text)
-#     text = latin_to_bopomofo(text)
-#     text = re.sub(r'([ˉˊˇˋ˙])$', r'\1。', text)
-#     return text
-
 def chinese_cleaners(text):
-    text = number_to_chinese(text)
-    from pypinyin import Style, pinyin
+    '''Pipeline for Chinese text'''
     text = text.replace("[ZH]", "")
-    # TONE3 - 声调风格3，即拼音声调在各个拼音之后，用数字 [1-4] 进行表示。如： 中国 -> zhong1 guo2
-    phones = [phone[0] for phone in pinyin(text, style=Style.TONE3)]
-    return ' '.join(phones)
+    text = number_to_chinese(text)
+    text = chinese_to_bopomofo(text)
+    text = latin_to_bopomofo(text)
+    text = re.sub(r'([ˉˊˇˋ˙])$', r'\1。', text)
+    return text
 
 
 def zh_ja_mixture_cleaners(text):

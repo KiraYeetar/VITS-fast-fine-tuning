@@ -20,8 +20,8 @@ if __name__ == "__main__":
             short_character_anno = f.readlines()
             new_annos += short_character_anno
     # Source 2: transcribed long audio segments
-    if os.path.exists("long_character_anno.txt"):
-        with open("long_character_anno.txt", 'r', encoding='utf-8') as f:
+    if os.path.exists("./long_character_anno.txt"):
+        with open("./long_character_anno.txt", 'r', encoding='utf-8') as f:
             long_character_anno = f.readlines()
             new_annos += long_character_anno
 
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     assert (len(speakers) != 0), "No audio file found. Please check your uploaded file structure."
     # Source 3 (Optional): sampled audios as extra training helpers
     if args.add_auxiliary_data:
-        with open("sampled_audio4ft.txt", 'r', encoding='utf-8') as f:
+        with open("./sampled_audio4ft.txt", 'r', encoding='utf-8') as f:
             old_annos = f.readlines()
         # filter old_annos according to supported languages
         filtered_old_annos = []
@@ -97,11 +97,11 @@ if __name__ == "__main__":
         # merge with old annotation
         final_annos = cleaned_old_annos + cc_duplicate * cleaned_new_annos
         # save annotation file
-        with open("final_annotation_train.txt", 'w', encoding='utf-8') as f:
+        with open("./final_annotation_train.txt", 'w', encoding='utf-8') as f:
             for line in final_annos:
                 f.write(line)
         # save annotation file for validation
-        with open("final_annotation_val.txt", 'w', encoding='utf-8') as f:
+        with open("./final_annotation_val.txt", 'w', encoding='utf-8') as f:
             for line in cleaned_new_annos:
                 f.write(line)
         print("finished")
@@ -142,11 +142,11 @@ if __name__ == "__main__":
 
         final_annos = cleaned_new_annos
         # save annotation file
-        with open("final_annotation_train.txt", 'w', encoding='utf-8') as f:
+        with open("./final_annotation_train.txt", 'w', encoding='utf-8') as f:
             for line in final_annos:
                 f.write(line)
         # save annotation file for validation
-        with open("final_annotation_val.txt", 'w', encoding='utf-8') as f:
+        with open("./final_annotation_val.txt", 'w', encoding='utf-8') as f:
             for line in cleaned_new_annos:
                 f.write(line)
         print("finished")
